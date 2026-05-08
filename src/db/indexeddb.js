@@ -1,5 +1,5 @@
 const DB_NAME = 'BikeRoadDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'roads';
 
 function openDB() {
@@ -26,6 +26,7 @@ export async function saveRoad(road) {
       ...road,
       id: road.id || crypto.randomUUID(),
       createdAt: road.createdAt || new Date().toISOString(),
+      points: road.points || [],
     };
     const req = store.put(data);
     req.onsuccess = () => resolve(data.id);
@@ -71,6 +72,62 @@ export async function deleteRoad(id) {
     const store = tx.objectStore(STORE_NAME);
     const req = store.delete(id);
     req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function addPointPhoto(roadId, pointId, photo) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(roadId);
+    req.onsuccess = () => {
+      const road = req.result;
+      if (!road) return reject(new Error('Road not found'));
+
+      const point = road.points?.find(p => p.id === pointId);
+      if (point) {
+        point.photos = point.photos || [];
+        point.photos.push({
+          id: crypto.randomUUID(),
+          ...photo,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      const updateReq = store.put(road);
+      updateReq.onsuccess = () => resolve();
+      updateReq.onerror = () => reject(updateReq.error);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function addPointStory(roadId, pointId, story) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(roadId);
+    req.onsuccess = () => {
+      const road = req.result;
+      if (!road) return reject(new Error('Road not found'));
+
+      const point = road.points?.find(p => p.id === pointId);
+      if (point) {
+        point.stories = point.stories || [];
+        point.stories.push({
+          id: crypto.randomUUID(),
+          ...story,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      const updateReq = store.put(road);
+      updateReq.onsuccess = () => resolve();
+      updateReq.onerror = () => reject(updateReq.error);
+    };
     req.onerror = () => reject(req.error);
   });
 }

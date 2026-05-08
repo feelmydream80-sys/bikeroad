@@ -71,6 +71,32 @@
     .progress-bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
     .progress-fill { height: 100%; background: #4CAF50; transition: width 0.3s; }
     .progress-text { font-size: 0.85rem; color: #666; margin-top: 4px; }
+
+    /* Point Modal */
+    .point-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+    .point-modal-content { background: white; border-radius: 16px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; padding: 20px; }
+    .point-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .point-modal-title { font-size: 1.2rem; font-weight: bold; color: #333; }
+    .point-modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
+    .point-modal-close:hover { color: #333; }
+    .point-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .point-photo { aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; }
+    .point-photo:hover { opacity: 0.8; }
+    .point-add-photo { aspect-ratio: 1; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 2rem; color: #999; }
+    .point-add-photo:hover { border-color: #2196F3; color: #2196F3; }
+    .point-stories { display: flex; flex-direction: column; gap: 12px; }
+    .point-story { padding: 12px; background: #f5f5f5; border-radius: 8px; }
+    .point-story-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .point-story-avatar { width: 24px; height: 24px; border-radius: 50%; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .point-story-user { font-weight: bold; font-size: 0.85rem; color: #333; }
+    .point-story-time { font-size: 0.75rem; color: #999; }
+    .point-story-content { font-size: 0.9rem; color: #666; }
+    .point-add-story { display: flex; gap: 8px; margin-top: 12px; }
+    .point-add-story input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; }
+    .point-add-story button { padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 20px; cursor: pointer; }
+    .point-add-story button:hover { background: #1976D2; }
+    .point-name-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-size: 1rem; }
+
     @media (max-width: 768px) {
       .card-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
       .nav-menu { overflow-x: auto; }
