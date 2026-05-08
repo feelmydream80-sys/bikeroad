@@ -90,7 +90,7 @@ router.onRouteChange = (route) => {
   }
 };
 
-document.body.insertAdjacentHTML('beforeend', '<div id="globalMapContainer" style="position:fixed;top:56px;left:0;right:0;bottom:0;z-index:1;"></div>');
+document.body.insertAdjacentHTML('beforeend', '<div id="globalMapContainer"></div>');
 
 router.navigate('road');
 
