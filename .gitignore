@@ -1,0 +1,7 @@
+node_modules/
+.clinerules/
+e.txt
+dist/
+.DS_Store
+*.log
+.env
