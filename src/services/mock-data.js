@@ -14,7 +14,7 @@ export const mockRoads = [
     userId: 'user2',
     name: '한강 자전거길',
     description: '서울 한강을 따라 달리는 멋진 길입니다. 야경도很不错!',
-    thumbnail: 'https://picsum.photos/seed/hanriver/400/300',
+    thumbnail: 'https://picsum.photos/seed/hanriver/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -31,13 +31,53 @@ export const mockRoads = [
     challengeCount: 89,
     completeCount: 67,
     createdAt: '2025-04-01T10:00:00Z',
+    points: [
+      {
+        id: 'p1',
+        lat: 37.5665,
+        lng: 126.9780,
+        name: '시작점 - 광화문',
+        memo: '출발은 광화문 광장에서! 역사적인 곳에서 시작해요',
+        creatorPhoto: 'https://picsum.photos/seed/road1_p1/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/c1_1/400/300', userId: 'user3', comment: '출발했어요!' },
+          { url: 'https://picsum.photos/seed/c1_2/400/300', userId: 'user4', comment: '오늘 날씨 좋아요' },
+          { url: 'https://picsum.photos/seed/c1_3/400/300', userId: 'user5', comment: '첫骑行完成!' },
+        ]
+      },
+      {
+        id: 'p2',
+        lat: 37.5700,
+        lng: 126.9750,
+        name: '한강대교 남단',
+        memo: '한강대교 아래에서 잠시 쉬어가는 포인트',
+        creatorPhoto: 'https://picsum.photos/seed/road1_p2/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/c2_1/400/300', userId: 'user3', comment: '여기ビュー很漂亮!' },
+          { url: 'https://picsum.photos/seed/c2_2/400/300', userId: 'user4', comment: '배경이 정말 예쁨' },
+        ]
+      },
+      {
+        id: 'p3',
+        lat: 37.5750,
+        lng: 126.9700,
+        name: '반포대교 전망대',
+        memo: '반포대교 아래에서 바라보는 한강이 최고!',
+        creatorPhoto: 'https://picsum.photos/seed/road1_p3/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/c3_1/400/300', userId: 'user2', comment: '야경이 정말素晴らしいです!' },
+          { url: 'https://picsum.photos/seed/c3_2/400/300', userId: 'user5', comment: '다음에 가족이랑 오고 싶어요' },
+          { url: 'https://picsum.photos/seed/c3_3/400/300', userId: 'user4', comment: '힐링 완료!' },
+        ]
+      },
+    ]
   },
   {
     id: 'road2',
     userId: 'user3',
     name: '남산 둘레길',
     description: '남산을 둘러싸는 산책로. 봄에 꽃이大変 예쁩니다.',
-    thumbnail: 'https://picsum.photos/seed/namsan/400/300',
+    thumbnail: 'https://picsum.photos/seed/namsan/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -54,13 +94,38 @@ export const mockRoads = [
     challengeCount: 56,
     completeCount: 42,
     createdAt: '2025-04-05T14:30:00Z',
+    points: [
+      {
+        id: 'p1',
+        lat: 37.5510,
+        lng: 126.9900,
+        name: '남산 케이블카 승강장',
+        memo: '케이블카 타고 올라가면 쉬워요!',
+        creatorPhoto: 'https://picsum.photos/seed/road2_p1/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/n1_1/400/300', userId: 'user2', comment: '케이블카 타는 중~' },
+        ]
+      },
+      {
+        id: 'p2',
+        lat: 37.5600,
+        lng: 127.0000,
+        name: 'N서울타워 앞',
+        memo: '타워 앞에서 사진 찍기 최고!',
+        creatorPhoto: 'https://picsum.photos/seed/road2_p2/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/n2_1/400/300', userId: 'user1', comment: '타워가 정말 높아요!' },
+          { url: 'https://picsum.photos/seed/n2_2/400/300', userId: 'user4', comment: '야경도很漂亮!' },
+        ]
+      },
+    ]
   },
   {
     id: 'road3',
     userId: 'user4',
     name: '광화문~경복궁 역사 투어',
     description: '서울의 역사를 느끼는 코스입니다.',
-    thumbnail: 'https://picsum.photos/seed/gwanghwamun/400/300',
+    thumbnail: 'https://picsum.photos/seed/gwanghwamun/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -77,13 +142,38 @@ export const mockRoads = [
     challengeCount: 34,
     completeCount: 28,
     createdAt: '2025-04-10T09:00:00Z',
+    points: [
+      {
+        id: 'p1',
+        lat: 37.5760,
+        lng: 126.9770,
+        name: '광화문 광장',
+        memo: '세종大王 동상이 있어요',
+        creatorPhoto: 'https://picsum.photos/seed/road3_p1/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/g1_1/400/300', userId: 'user5', comment: '역사 여행 중' },
+        ]
+      },
+      {
+        id: 'p2',
+        lat: 37.5740,
+        lng: 126.9750,
+        name: '경복궁 해치门',
+        memo: '进去하면 역사 박물관이 있어요',
+        creatorPhoto: 'https://picsum.photos/seed/road3_p2/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/g2_1/400/300', userId: 'user3', comment: '궁궐很漂亮!' },
+          { url: 'https://picsum.photos/seed/g2_2/400/300', userId: 'user1', comment: '다음에 다시 오고 싶어요' },
+        ]
+      },
+    ]
   },
   {
     id: 'road4',
     userId: 'user5',
     name: '여의도 공원一圈',
     description: '여의도 한강공원을 타고一圈 돌기!',
-    thumbnail: 'https://picsum.photos/seed/yeouido/400/300',
+    thumbnail: 'https://picsum.photos/seed/yeouido/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -100,13 +190,27 @@ export const mockRoads = [
     challengeCount: 112,
     completeCount: 89,
     createdAt: '2025-04-12T16:00:00Z',
+    points: [
+      {
+        id: 'p1',
+        lat: 37.5210,
+        lng: 126.9200,
+        name: '여의도 시민공원',
+        memo: '서울証券取引所在 가까이에 있어요',
+        creatorPhoto: 'https://picsum.photos/seed/road4_p1/400/300',
+        challengerPhotos: [
+          { url: 'https://picsum.photos/seed/y1_1/400/300', userId: 'user2', comment: '공원 러닝하기 좋아요' },
+          { url: 'https://picsum.photos/seed/y1_2/400/300', userId: 'user3', comment: '자전거 타기 좋은 길!' },
+        ]
+      },
+    ]
   },
   {
     id: 'road5',
     userId: 'user2',
     name: '뚝섬 자전거길',
     description: '뚝섬에서 성수까지 이어지는 루트',
-    thumbnail: 'https://picsum.photos/seed/jamsil/400/300',
+    thumbnail: 'https://picsum.photos/seed/jamsil/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -123,13 +227,14 @@ export const mockRoads = [
     challengeCount: 45,
     completeCount: 33,
     createdAt: '2025-04-15T11:30:00Z',
+    points: []
   },
   {
     id: 'road6',
     userId: 'user3',
     name: '동대문 디자인 플라자',
     description: 'DDP 근처의 현대적인 도시 여행',
-    thumbnail: 'https://picsum.photos/seed/ddp/400/300',
+    thumbnail: 'https://picsum.photos/seed/ddp/800/400',
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -146,6 +251,7 @@ export const mockRoads = [
     challengeCount: 28,
     completeCount: 22,
     createdAt: '2025-04-18T08:00:00Z',
+    points: []
   },
 ];
 
@@ -211,4 +317,9 @@ export function getCommentsByRoad(roadId) {
 
 export function getUserAchievements(userId) {
   return mockAchievements.filter(a => a.userId === userId);
+}
+
+export function getAllChallengerPhotos(road) {
+  if (!road.points) return [];
+  return road.points.flatMap(p => p.challengerPhotos || []);
 }

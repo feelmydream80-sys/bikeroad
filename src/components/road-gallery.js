@@ -1,4 +1,4 @@
-import { mockRoads, mockUsers, getUserById, isLiked } from '../services/mock-data.js';
+import { mockRoads, mockUsers, getUserById, isLiked, getAllChallengerPhotos } from '../services/mock-data.js';
 import { currentUser } from '../services/mock-data.js';
 
 export function renderRoadPage(containerId, map) {
@@ -50,7 +50,7 @@ export function renderRoadPage(containerId, map) {
               <button class="btn ${liked ? 'btn-primary' : 'btn-secondary'}" data-action="like" data-id="${road.id}">
                 ${liked ? '❤️ 좋아요' : '🤍 좋아요'}
               </button>
-              <button class="btn btn-secondary" data-action="view" data-id="${road.id}">🗺️ 보기</button>
+              <button class="btn btn-secondary" data-action="view" data-id="${road.id}">📖 상세보기</button>
               <button class="btn btn-primary" data-action="challenge" data-id="${road.id}">🏆 도전하기</button>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function renderRoadPage(containerId, map) {
       if (card) {
         const roadId = card.dataset.id;
         const road = mockRoads.find(r => r.id === roadId);
-        if (road) showRoadOnMap(road, map);
+        if (road) showRoadDetailModal(road);
       }
       return;
     }
@@ -88,29 +88,134 @@ export function renderRoadPage(containerId, map) {
       road.likeCount += btn.textContent.includes('🤍') ? 1 : -1;
       renderRoads();
     } else if (action === 'view' && road) {
-      showRoadOnMap(road, map);
+      showRoadDetailModal(road);
     } else if (action === 'challenge' && road) {
-      showRoadOnMap(road, map);
-      setTimeout(() => {
-        window.router.navigate('challenge');
-      }, 500);
+      showRoadDetailModal(road);
     }
   });
 
   renderRoads();
 }
 
-function showRoadOnMap(road, map) {
-  if (window.currentRouteLayer) {
-    map.removeLayer(window.currentRouteLayer);
-  }
-
+function showRoadDetailModal(road) {
+  const user = getUserById(road.userId);
+  const challengerPhotos = getAllChallengerPhotos(road);
   const coords = road.geometry.coordinates.map(c => [c[1], c[0]]);
-  window.currentRouteLayer = L.polyline(coords, {
-    color: '#4CAF50',
-    weight: 5,
-    opacity: 0.9,
-  }).addTo(map);
 
-  map.fitBounds(window.currentRouteLayer.getBounds(), { padding: [50, 50] });
+  const modal = document.createElement('div');
+  modal.className = 'road-detail-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <button class="modal-close" onclick="this.closest('.road-detail-modal').remove()">&times;</button>
+      
+      <img src="${road.thumbnail}" class="modal-thumbnail" alt="${road.name}" />
+      
+      <div class="modal-map" id="modalMap"></div>
+      
+      <h2 class="modal-title">${road.name}</h2>
+      <p class="modal-desc">${road.description}</p>
+      
+      <div class="modal-stats">
+        <span>❤️ ${road.likeCount}</span>
+        <span>💬 ${road.commentCount}</span>
+        <span>🏆 도전 ${road.challengeCount}</span>
+        <span>✅ 완주 ${road.completeCount}</span>
+      </div>
+      
+      ${road.points && road.points.length > 0 ? `
+        <div class="modal-points">
+          <h3>📍 포인트</h3>
+          ${road.points.map((point, idx) => `
+            <div class="modal-point">
+              <div class="point-header">
+                <span class="point-num">${idx + 1}</span>
+                <div class="point-info">
+                  <strong>${point.name}</strong>
+                  ${point.memo ? `<p class="point-memo">${point.memo}</p>` : ''}
+                </div>
+              </div>
+              <img src="${point.creatorPhoto}" class="point-creator-photo" alt="${point.name}" />
+              ${point.challengerPhotos && point.challengerPhotos.length > 0 ? `
+                <div class="point-challengers">
+                  <h4>📷 다른 도전자들의 사진</h4>
+                  <div class="challenger-gallery">
+                    ${point.challengerPhotos.map(cp => {
+                      const cpUser = getUserById(cp.userId);
+                      return `
+                        <div class="challenger-card">
+                          <img src="${cp.url}" alt="challenger photo" />
+                          <div class="challenger-info">
+                            <span class="challenger-avatar">${cpUser?.avatar || '👤'}</span>
+                            <span class="challenger-name">${cpUser?.name || 'Anonymous'}</span>
+                            <p class="challenger-comment">${cp.comment}</p>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      
+      ${challengerPhotos.length > 0 && (!road.points || road.points.length === 0) ? `
+        <div class="modal-challengers">
+          <h3>📷 다른 도전자들의 사진</h3>
+          <div class="challenger-gallery">
+            ${challengerPhotos.map(cp => {
+              const cpUser = getUserById(cp.userId);
+              return `
+                <div class="challenger-card">
+                  <img src="${cp.url}" alt="challenger photo" />
+                  <div class="challenger-info">
+                    <span class="challenger-avatar">${cpUser?.avatar || '👤'}</span>
+                    <span class="challenger-name">${cpUser?.name || 'Anonymous'}</span>
+                    <p class="challenger-comment">${cp.comment}</p>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+      
+      <button class="btn btn-primary modal-challenge-btn">🏆 도전하기</button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  setTimeout(() => {
+    const modalMap = L.map('modalMap', {
+      center: coords[0] || [37.5665, 126.9780],
+      zoom: 13,
+      dragging: false,
+      zoomControl: true,
+      scrollWheelZoom: false,
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(modalMap);
+
+    L.polyline(coords, {
+      color: '#4CAF50',
+      weight: 5,
+      opacity: 0.9,
+    }).addTo(modalMap);
+
+    if (road.points && road.points.length > 0) {
+      road.points.forEach((point, i) => {
+        L.marker([point.lat, point.lng], {
+          icon: L.divIcon({
+            html: `<div class="point-marker">${i + 1}</div>`,
+            className: 'custom-point-marker',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+          })
+        }).addTo(modalMap).bindPopup(`<strong>${point.name}</strong>${point.memo ? `<p>${point.memo}</p>` : ''}`);
+      });
+    }
+
+    modalMap.fitBounds(modalMap.getBounds(), { padding: [20, 20] });
+  }, 100);
 }
