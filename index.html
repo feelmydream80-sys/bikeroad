@@ -12,108 +12,84 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
-    #app { display: flex; height: 100vh; }
-    #map { flex: 1; height: 100%; }
-    .sidebar { width: 320px; background: #fff; border-left: 1px solid #ddd; display: flex; flex-direction: column; transition: transform 0.3s; z-index: 1000; }
-    .sidebar.closed { transform: translateX(100%); position: absolute; right: 0; height: 100%; }
-    .sidebar-header { padding: 16px; background: #2196F3; color: white; font-weight: bold; font-size: 1.2rem; }
-    .sidebar-content { flex: 1; overflow-y: auto; padding: 16px; }
-    .mode-buttons { display: flex; gap: 8px; margin-bottom: 16px; }
-    .mode-btn { flex: 1; padding: 10px; border: 2px solid #2196F3; background: white; color: #2196F3; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .mode-btn.active { background: #2196F3; color: white; }
-    .mode-btn:hover { opacity: 0.9; }
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .waypoint-list { margin: 12px 0; }
-    .waypoint-item { display: flex; align-items: center; gap: 8px; padding: 8px; background: #f5f5f5; border-radius: 6px; margin-bottom: 6px; cursor: grab; }
-    .waypoint-item.dragging { opacity: 0.5; }
-    .wp-num { width: 24px; height: 24px; background: #2196F3; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
-    .wp-coords { flex: 1; font-size: 0.85rem; color: #666; }
-    .wp-delete { background: #ff4444; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; }
-    .info-box { background: #e3f2fd; padding: 12px; border-radius: 8px; margin: 12px 0; }
-    .info-box p { margin: 4px 0; font-size: 0.9rem; }
-    .btn-primary { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 8px; }
-    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
-    .btn-secondary { width: 100%; padding: 10px; background: #f5f5f5; color: #333; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; margin-top: 8px; }
-    .saved-list { margin-top: 16px; }
-    .saved-item { padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
-    .saved-item:hover { border-color: #2196F3; background: #f5f5f5; }
-    .saved-item h4 { margin: 0 0 4px 0; color: #333; }
-    .saved-item p { margin: 0; font-size: 0.85rem; color: #666; }
-    .saved-item small { color: #999; font-size: 0.75rem; }
-    .draw-hint { background: #fff3e0; padding: 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.85rem; color: #e65100; }
-    .toggle-sidebar { position: absolute; top: 12px; right: 12px; z-index: 1000; background: white; border: none; padding: 10px 14px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; font-size: 1.2rem; }
-    input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 6px; font-family: inherit; }
-    textarea { resize: vertical; min-height: 60px; }
-    .label { font-size: 0.9rem; font-weight: 600; color: #555; margin-top: 12px; display: block; }
-    .draw-mode #map,
-    body.draw-mode { cursor: none !important; }
-    .draw-mode #map *,
-    body.draw-mode * { cursor: none !important; }
-    .waypoint-mode #map,
-    body.waypoint-mode { cursor: none !important; }
-    .waypoint-mode #map *,
-    body.waypoint-mode * { cursor: none !important; }
-
+    #app { display: flex; flex-direction: column; height: 100vh; }
+    #navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
+    #content { flex: 1; margin-top: 56px; overflow-y: auto; padding: 16px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 16px; color: #333; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .road-card { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; transition: 0.2s; cursor: pointer; }
+    .road-card:hover { transform: translateY(-4px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .road-card img { width: 100%; height: 180px; object-fit: cover; }
+    .road-card-body { padding: 12px; }
+    .road-card-title { font-size: 1rem; font-weight: bold; margin-bottom: 4px; color: #333; }
+    .road-card-desc { font-size: 0.85rem; color: #666; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .road-card-meta { display: flex; gap: 12px; font-size: 0.8rem; color: #999; }
+    .road-card-meta span { display: flex; align-items: center; gap: 4px; }
+    .road-card-user { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
+    .road-card-user img { width: 24px; height: 24px; border-radius: 50%; }
+    .road-card-user .name { font-size: 0.85rem; color: #333; }
+    .btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn-primary { background: #2196F3; color: white; }
+    .btn-primary:hover { background: #1976D2; }
+    .btn-secondary { background: #f5f5f5; color: #333; }
+    .btn-secondary:hover { background: #e0e0e0; }
+    .feed-card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .feed-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .feed-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .feed-user-info { flex: 1; }
+    .feed-user-name { font-weight: bold; color: #333; }
+    .feed-time { font-size: 0.75rem; color: #999; }
+    .feed-content { margin-bottom: 12px; }
+    .feed-actions { display: flex; gap: 16px; border-top: 1px solid #eee; padding-top: 12px; }
+    .feed-action { display: flex; align-items: center; gap: 4px; cursor: pointer; color: #666; font-size: 0.9rem; }
+    .feed-action:hover { color: #2196F3; }
+    .profile-header { text-align: center; padding: 24px; background: white; border-radius: 12px; margin-bottom: 16px; }
+    .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 12px; }
+    .profile-name { font-size: 1.5rem; font-weight: bold; color: #333; }
+    .profile-stats { display: flex; justify-content: center; gap: 32px; margin-top: 16px; }
+    .profile-stat { text-align: center; }
+    .profile-stat-value { font-size: 1.5rem; font-weight: bold; color: #2196F3; }
+    .profile-stat-label { font-size: 0.8rem; color: #666; }
+    .achievement-list { display: flex; flex-direction: column; gap: 8px; }
+    .achievement-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 8px; }
+    .achievement-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff3e0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .achievement-info { flex: 1; }
+    .achievement-name { font-weight: bold; color: #333; }
+    .achievement-desc { font-size: 0.8rem; color: #666; }
+    .sub-menu { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .sub-menu button { padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 20px; cursor: pointer; }
+    .sub-menu button.active { background: #2196F3; color: white; border-color: #2196F3; }
+    .challenge-card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .challenge-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .challenge-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+    .challenge-info { flex: 1; }
+    .challenge-name { font-weight: bold; color: #333; }
+    .challenge-meta { font-size: 0.8rem; color: #666; }
+    .challenge-progress { margin-top: 12px; }
+    .progress-bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #4CAF50; transition: width 0.3s; }
+    .progress-text { font-size: 0.85rem; color: #666; margin-top: 4px; }
     @media (max-width: 768px) {
-      .sidebar { width: 100%; position: absolute; right: 0; height: 100%; transform: translateX(100%); }
-      .sidebar.open { transform: translateX(0); }
-      .toggle-sidebar { display: block; }
+      .card-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+      .nav-menu { overflow-x: auto; }
     }
   </style>
 </head>
-<body class="waypoint-mode">
+<body>
   <div id="app">
-    <div id="map"></div>
-    <button class="toggle-sidebar" id="toggleSidebar">☰</button>
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">자전거 로드</div>
-      <div class="sidebar-content">
-        <div class="mode-buttons">
-          <button class="mode-btn active" data-mode="waypoint">📍 경유지</button>
-          <button class="mode-btn" data-mode="draw">✏️ 자유그리기</button>
-        </div>
-
-        <!-- 경유지 모드 -->
-        <div class="panel active" id="panel-waypoint">
-          <div class="draw-hint">지도를 클릭하여 출발지 → 경유지 → 도착지를 설정하세요.</div>
-          <div class="waypoint-list" id="waypointList"></div>
-          <div class="info-box" id="routeInfo" style="display:none;">
-            <p>📏 거리: <strong id="distVal">0</strong> km</p>
-            <p>⏱️ 예상 시간: <strong id="timeVal">0</strong> 분</p>
-          </div>
-          <button class="btn-secondary" id="clearWaypoints">경유지 모두 삭제</button>
-          <label class="label">경로 이름</label>
-          <input type="text" id="roadName" placeholder="예: 한강 자전거길" />
-          <label class="label">설명</label>
-          <textarea id="roadDesc" placeholder="이 길에 대한 설명을 입력하세요."></textarea>
-          <button class="btn-primary" id="saveRoad" disabled>경로 저장</button>
-        </div>
-
-        <!-- 자유그리기 모드 -->
-        <div class="panel" id="panel-draw">
-          <div class="draw-hint">지도 위에서 마우스를 끌어 자유롭게 그려보세요. 손을 떼면 실제 도로로 자동 연결됩니다.</div>
-          <div class="info-box" id="drawInfo" style="display:none;">
-            <p>📏 거리: <strong id="drawDist">0</strong> km</p>
-            <p>⏱️ 예상 시간: <strong id="drawTime">0</strong> 분</p>
-          </div>
-          <button class="btn-secondary" id="clearDraw">그리기 초기화</button>
-          <label class="label">경로 이름</label>
-          <input type="text" id="drawName" placeholder="예: 한강 자전거길" />
-          <label class="label">설명</label>
-          <textarea id="drawDesc" placeholder="이 길에 대한 설명을 입력하세요."></textarea>
-          <button class="btn-primary" id="saveDraw" disabled>경로 저장</button>
-        </div>
-
-        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
-        <h3 style="margin-bottom: 12px; color: #333;">📂 저장된 경로</h3>
-        <div class="saved-list" id="savedList"></div>
-      </div>
+    <div id="navbar"></div>
+    <div id="content">
+      <div id="page-road" class="page"></div>
+      <div id="page-challenge" class="page"></div>
+      <div id="page-friend" class="page"></div>
+      <div id="page-popular" class="page"></div>
+      <div id="page-profile" class="page"></div>
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // 기존 Service Worker 강제 제거 (개발 중 캐싱 문제 해결)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
