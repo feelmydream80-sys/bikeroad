@@ -1,6 +1,7 @@
 node_modules/
 .clinerules/
 e.txt
+b.txt
 dist/
 .DS_Store
 *.log

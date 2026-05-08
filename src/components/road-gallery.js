@@ -46,11 +46,11 @@ export function renderRoadPage(containerId, map) {
               <span style="font-size:1.2rem;">${user?.avatar || '👤'}</span>
               <span class="name">${user?.name || 'Anonymous'}</span>
             </div>
-            <div style="margin-top:8px;display:flex;gap:8px;">
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
               <button class="btn ${liked ? 'btn-primary' : 'btn-secondary'}" data-action="like" data-id="${road.id}">
                 ${liked ? '❤️ 좋아요' : '🤍 좋아요'}
               </button>
-              <button class="btn btn-secondary" data-action="comment" data-id="${road.id}">💬 댓글</button>
+              <button class="btn btn-secondary" data-action="view" data-id="${road.id}">🗺️ 보기</button>
               <button class="btn btn-primary" data-action="challenge" data-id="${road.id}">🏆 도전하기</button>
             </div>
           </div>
@@ -75,33 +75,42 @@ export function renderRoadPage(containerId, map) {
       if (card) {
         const roadId = card.dataset.id;
         const road = mockRoads.find(r => r.id === roadId);
-        if (road) showRoadDetail(road, map);
+        if (road) showRoadOnMap(road, map);
       }
       return;
     }
 
     const action = btn.dataset.action;
     const roadId = btn.dataset.id;
+    const road = mockRoads.find(r => r.id === roadId);
 
-    if (action === 'like') {
-      const road = mockRoads.find(r => r.id === roadId);
-      if (road) {
-        road.likeCount += btn.textContent.includes('🤍') ? 1 : -1;
-        renderRoads();
-      }
-    } else if (action === 'challenge') {
-      const road = mockRoads.find(r => r.id === roadId);
-      if (road) {
+    if (action === 'like' && road) {
+      road.likeCount += btn.textContent.includes('🤍') ? 1 : -1;
+      renderRoads();
+    } else if (action === 'view' && road) {
+      showRoadOnMap(road, map);
+    } else if (action === 'challenge' && road) {
+      showRoadOnMap(road, map);
+      setTimeout(() => {
         window.router.navigate('challenge');
-      }
-    } else if (action === 'comment') {
-      alert('댓글 기능은 곧 추가됩니다!');
+      }, 500);
     }
   });
 
   renderRoads();
 }
 
-function showRoadDetail(road, map) {
-  alert(`경로: ${road.name}\n거리: ${road.distance}km\n${road.description}`);
+function showRoadOnMap(road, map) {
+  if (window.currentRouteLayer) {
+    map.removeLayer(window.currentRouteLayer);
+  }
+
+  const coords = road.geometry.coordinates.map(c => [c[1], c[0]]);
+  window.currentRouteLayer = L.polyline(coords, {
+    color: '#4CAF50',
+    weight: 5,
+    opacity: 0.9,
+  }).addTo(map);
+
+  map.fitBounds(window.currentRouteLayer.getBounds(), { padding: [50, 50] });
 }

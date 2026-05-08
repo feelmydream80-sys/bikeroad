@@ -5,58 +5,59 @@ import { renderChallengePage } from './components/challenge.js';
 import { renderFeedPage } from './components/friend-feed.js';
 import { renderProfilePage } from './components/profile.js';
 
-const map = L.map('map', {
-  center: [37.5665, 126.9780],
-  zoom: 13,
-  zoomControl: false,
-  dragging: false,
-  touchZoom: false,
-  scrollWheelZoom: false,
-  doubleClickZoom: false,
-  boxZoom: false,
-  keyboard: false,
-});
-
-L.control.zoom({ position: 'topright' }).addTo(map);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors',
-}).addTo(map);
-
 let ctrlPressed = false;
-
-function setMapControl(enabled) {
-  if (enabled) {
-    map.dragging.enable();
-    map.touchZoom.enable();
-    map.scrollWheelZoom.enable();
-    map.doubleClickZoom.enable();
-    map.boxZoom.enable();
-  } else {
-    map.dragging.disable();
-    map.touchZoom.disable();
-    map.scrollWheelZoom.disable();
-    map.doubleClickZoom.disable();
-    map.boxZoom.disable();
-  }
-}
+let globalMap = null;
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Control' && !ctrlPressed) {
     ctrlPressed = true;
-    setMapControl(true);
+    if (globalMap) {
+      globalMap.dragging.enable();
+      globalMap.touchZoom.enable();
+      globalMap.scrollWheelZoom.enable();
+      globalMap.doubleClickZoom.enable();
+      globalMap.boxZoom.enable();
+    }
   }
 });
 
 document.addEventListener('keyup', (e) => {
   if (e.key === 'Control') {
     ctrlPressed = false;
-    setMapControl(false);
+    if (globalMap) {
+      globalMap.dragging.disable();
+      globalMap.touchZoom.disable();
+      globalMap.scrollWheelZoom.disable();
+      globalMap.doubleClickZoom.disable();
+      globalMap.boxZoom.disable();
+    }
   }
 });
 
-setMapControl(false);
+function createGlobalMap() {
+  if (globalMap) return globalMap;
+  globalMap = L.map('globalMapContainer', {
+    center: [37.5665, 126.9780],
+    zoom: 13,
+    zoomControl: false,
+    dragging: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+  });
+
+  L.control.zoom({ position: 'topright' }).addTo(globalMap);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(globalMap);
+
+  globalMap.dragging.disable();
+  return globalMap;
+}
 
 const navbarContainer = document.getElementById('navbar');
 const styleEl = document.createElement('style');
@@ -65,11 +66,20 @@ document.head.appendChild(styleEl);
 
 renderNavbar(navbarContainer);
 
-router.register('road', () => renderRoadPage('page-road', map));
-router.register('challenge', () => renderChallengePage('page-challenge', map));
+router.register('road', () => {
+  const map = createGlobalMap();
+  renderRoadPage('page-road', map);
+});
+router.register('challenge', () => {
+  const map = createGlobalMap();
+  renderChallengePage('page-challenge', map);
+});
 router.register('friend', () => renderFeedPage('page-friend', 'friend'));
 router.register('popular', () => renderFeedPage('page-popular', 'popular'));
-router.register('profile', () => renderProfilePage('page-profile', map));
+router.register('profile', () => {
+  const map = createGlobalMap();
+  renderProfilePage('page-profile', map);
+});
 
 router.onRouteChange = (route) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -80,7 +90,9 @@ router.onRouteChange = (route) => {
   }
 };
 
+document.body.insertAdjacentHTML('beforeend', '<div id="globalMapContainer" style="position:fixed;top:56px;left:0;right:0;bottom:0;z-index:1;"></div>');
+
 router.navigate('road');
 
-window.map = map;
+window.map = globalMap;
 window.router = router;
