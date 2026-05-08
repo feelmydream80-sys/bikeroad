@@ -205,14 +205,38 @@ function showRoadDetailModal(road) {
 
     if (road.points && road.points.length > 0) {
       road.points.forEach((point, i) => {
+        const hasPhoto = point.creatorPhoto;
+        const hasMemo = point.memo;
+
+        let markerContent = `<div class="map-point-marker">
+          <div class="map-point-num">${i + 1}</div>`;
+
+        if (hasPhoto) {
+          markerContent += `<img src="${point.creatorPhoto}" class="map-point-photo" />`;
+        }
+
+        if (hasMemo) {
+          markerContent += `<div class="map-point-memo">📝</div>`;
+        }
+
+        markerContent += `</div>`;
+
+        const markerIcon = L.divIcon({
+          html: markerContent,
+          className: 'custom-map-point-marker',
+          iconSize: [44, 44],
+          iconAnchor: [22, 22],
+        });
+
         L.marker([point.lat, point.lng], {
-          icon: L.divIcon({
-            html: `<div class="point-marker">${i + 1}</div>`,
-            className: 'custom-point-marker',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14],
-          })
-        }).addTo(modalMap).bindPopup(`<strong>${point.name}</strong>${point.memo ? `<p>${point.memo}</p>` : ''}`);
+          icon: markerIcon
+        }).addTo(modalMap).bindPopup(`
+          <div class="marker-popup">
+            ${hasPhoto ? `<img src="${point.creatorPhoto}" class="marker-popup-photo" />` : ''}
+            <strong>${point.name}</strong>
+            ${point.memo ? `<p class="marker-popup-memo">${point.memo}</p>` : ''}
+          </div>
+        `);
       });
     }
 
